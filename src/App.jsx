@@ -29,7 +29,8 @@ import Payment from './Pages/Payment';
 import Dashboard from './Pages/Dashboard';
 import AdminPanel from './Pages/AdminPanel';
 import NotFound from './Pages/NotFound';
-import ServerError from './Pages/ServerError';
+
+import ServerError from '../src/Pages/serverError.jsx';
 
 /* -----------------------------
    PROTECTED ROUTE
