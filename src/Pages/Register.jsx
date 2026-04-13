@@ -1,307 +1,469 @@
+// src/pages/Register.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { teamAPI } from '../services/api.js';
-import AnimatedButton from '../components/Common/AnimatedButton';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from '../hooks/useForm';
+import { validateEmail } from '../utils/validators';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [teamMembers, setTeamMembers] = useState([{ name: '', email: '', phone: '' }]);
+  const [teamMembers, setTeamMembers] = useState([{ name: '', email: '', role: 'Developer' }]);
+  const [selectedTrack, setSelectedTrack] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const [formData, setFormData] = useState({
-    teamName: '',
-    leaderName: '',
-    leaderEmail: '',
-    leaderPhone: '',
-    college: '',
-    track: '',
-    problemStatement: ''
-  });
+  const tracks = [
+    'AI & Machine Learning',
+    'Web Development',
+    'Mobile Development',
+    'IoT & Embedded Systems',
+    'Blockchain & Web3',
+    'Cybersecurity',
+  ];
 
-  const tracks = ['AI & ML', 'IoT', 'Web3', 'Cybersecurity', 'Open Innovation'];
-  const problems = {
-    'AI & ML': ['ML Model Optimization', 'AI Chatbot', 'Computer Vision'],
-    'IoT': ['Smart Home', 'Wearables', 'Industrial IoT'],
-    'Web3': ['DeFi Protocol', 'NFT Platform', 'DAO'],
-    'Cybersecurity': ['Threat Detection', 'Secure Messaging', 'Vulnerability Scanner'],
-    'Open Innovation': ['Your Own Idea']
-  };
+  const roles = ['Developer', 'Designer', 'Manager', 'Other'];
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleMemberChange = (idx, field, value) => {
-    const newMembers = [...teamMembers];
-    newMembers[idx][field] = value;
-    setTeamMembers(newMembers);
-  };
+  const { values, errors, touched, handleChange, handleBlur, handleSubmit, reset } = useForm(
+    { teamName: '', teamSize: 2, track: '' },
+    async (values) => {
+      console.log('Registering team:', { ...values, teamMembers });
+      setSuccessMessage('Team registered successfully! You will receive a confirmation email.');
+      reset();
+      setTeamMembers([{ name: '', email: '', role: 'Developer' }]);
+      setSelectedTrack('');
+      setTimeout(() => navigate('/payment'), 2000);
+    }
+  );
 
   const addMember = () => {
-    setTeamMembers([...teamMembers, { name: '', email: '', phone: '' }]);
+    if (teamMembers.length < 5) {
+      setTeamMembers([...teamMembers, { name: '', email: '', role: 'Developer' }]);
+    }
   };
 
-  const removeMember = (idx) => {
-    setTeamMembers(teamMembers.filter((_, i) => i !== idx));
+  const removeMember = (index) => {
+    setTeamMembers(teamMembers.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (!formData.teamName || !formData.leaderName || !formData.track) {
-      setError('Please fill in all required fields');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const payload = {
-        ...formData,
-        teamMembers: teamMembers.filter(m => m.name && m.email)
-      };
-
-      const response = await teamAPI.register(payload);
-      localStorage.setItem('teamId', response.data.id);
-      localStorage.setItem('teamName', formData.teamName);
-      
-      navigate('/payment', { state: { teamId: response.data.id } });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
+  const updateMember = (index, field, value) => {
+    const updated = [...teamMembers];
+    updated[index][field] = value;
+    setTeamMembers(updated);
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gradient-to-b from-black via-blue-950/20 to-black">
-      <div className="max-w-3xl mx-auto px-6">
+    <div
+      style={{
+        background: 'linear-gradient(135deg, #000000 0%, #0a0e27 50%, #000000 100%)',
+        minHeight: '100vh',
+        paddingTop: '100px',
+        paddingBottom: '60px',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Background 3D elements */}
+      <motion.div
+        animate={{ rotate: 360, y: [0, 30, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'fixed',
+          top: -300,
+          right: -300,
+          width: 600,
+          height: 600,
+          background: 'radial-gradient(circle, rgba(100,181,246,0.15) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(50px)',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: '1000px',
+          margin: '0 auto',
+          padding: '0 20px',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
+          transition={{ duration: 0.8 }}
+          style={{
+            textAlign: 'center',
+            marginBottom: '60px',
+          }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-neon">
+          <h1
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #64b5f6, #00bcd4)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              marginBottom: '15px',
+              fontFamily: "'Orbitron', sans-serif",
+              letterSpacing: '2px',
+            }}
+          >
             Register Your Team
           </h1>
-          <p className="text-gray-400">
-            Join the most exciting hackathon of the year
+          <p style={{ fontSize: '1.125rem', color: '#bdbdbd' }}>
+            Join the most exciting tech event. Build something amazing!
           </p>
         </motion.div>
 
-        <motion.form
+        {/* Success Message */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              background: 'linear-gradient(135deg, rgba(76,175,80,0.2) 0%, rgba(76,175,80,0.1) 100%)',
+              border: '2px solid #4caf50',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '30px',
+              color: '#4caf50',
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}
+          >
+            ✓ {successMessage}
+          </motion.div>
+        )}
+
+        {/* Form Container */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          onSubmit={handleSubmit}
-          className="card space-y-6"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(45,45,45,0.8) 0%, rgba(26,26,26,0.8) 100%)',
+            border: '2px solid rgba(100,181,246,0.2)',
+            borderRadius: '20px',
+            padding: '50px 40px',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+          }}
         >
-          {error && (
+          <form onSubmit={handleSubmit}>
+            {/* Team Name */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              style={{ marginBottom: '30px' }}
             >
-              {error}
-            </motion.div>
-          )}
-
-          {/* Team Information */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold text-cyan-400">Team Information</h2>
-            
-            <div>
-              <label className="block text-sm font-semibold mb-2">Team Name *</label>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '12px',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  color: '#64b5f6',
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                Team Name *
+              </label>
               <input
                 type="text"
                 name="teamName"
-                value={formData.teamName}
-                onChange={handleFormChange}
-                placeholder="Your awesome team name"
-                required
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition"
+                value={values.teamName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Enter your team name"
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  background: 'rgba(0,0,0,0.5)',
+                  border: touched.teamName && errors.teamName ? '2px solid #f44336' : '2px solid rgba(100,181,246,0.3)',
+                  borderRadius: '10px',
+                  color: '#e0e0e0',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#64b5f6';
+                  e.target.style.boxShadow = '0 0 20px rgba(100,181,246,0.3)';
+                }}
               />
-            </div>
+              {touched.teamName && errors.teamName && (
+                <span style={{ color: '#f44336', fontSize: '0.9rem', marginTop: '5px', display: 'block' }}>
+                  {errors.teamName}
+                </span>
+              )}
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">College/Organization *</label>
-              <input
-                type="text"
-                name="college"
-                value={formData.college}
-                onChange={handleFormChange}
-                placeholder="Your institution name"
-                required
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition"
-              />
-            </div>
-          </div>
-
-          {/* Team Leader Information */}
-          <div className="space-y-4 border-t border-cyan-500/20 pt-6">
-            <h2 className="text-xl font-bold text-cyan-400">Team Leader</h2>
-            
-            <div>
-              <label className="block text-sm font-semibold mb-2">Full Name *</label>
-              <input
-                type="text"
-                name="leaderName"
-                value={formData.leaderName}
-                onChange={handleFormChange}
-                placeholder="Your name"
-                required
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Email *</label>
-                <input
-                  type="email"
-                  name="leaderEmail"
-                  value={formData.leaderEmail}
-                  onChange={handleFormChange}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Phone *</label>
-                <input
-                  type="tel"
-                  name="leaderPhone"
-                  value={formData.leaderPhone}
-                  onChange={handleFormChange}
-                  placeholder="+91-XXXXXXXXXX"
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Track Selection */}
-          <div className="space-y-4 border-t border-cyan-500/20 pt-6">
-            <h2 className="text-xl font-bold text-cyan-400">Track & Problem Statement</h2>
-            
-            <div>
-              <label className="block text-sm font-semibold mb-2">Select Track *</label>
-              <select
-                name="track"
-                value={formData.track}
-                onChange={handleFormChange}
-                required
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white focus:border-cyan-400 focus:bg-white/10 transition"
+            {/* Track Selection */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              style={{ marginBottom: '30px' }}
+            >
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '12px',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  color: '#64b5f6',
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
               >
-                <option value="">Choose a track...</option>
-                {tracks.map(track => (
-                  <option key={track} value={track}>{track}</option>
+                Select Track *
+              </label>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '15px',
+                }}
+              >
+                {tracks.map((track) => (
+                  <motion.button
+                    key={track}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={() => setSelectedTrack(track)}
+                    style={{
+                      padding: '12px 18px',
+                      background: selectedTrack === track
+                        ? 'linear-gradient(135deg, #64b5f6 0%, #2196f3 100%)'
+                        : 'rgba(0,0,0,0.5)',
+                      border: selectedTrack === track ? 'none' : '2px solid rgba(100,181,246,0.3)',
+                      borderRadius: '10px',
+                      color: selectedTrack === track ? 'white' : '#64b5f6',
+                      fontSize: '0.95rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      boxShadow: selectedTrack === track ? '0 0 20px rgba(100,181,246,0.4)' : 'none',
+                    }}
+                  >
+                    {track}
+                  </motion.button>
                 ))}
-              </select>
-            </div>
-
-            {formData.track && (
-              <div>
-                <label className="block text-sm font-semibold mb-2">Problem Statement *</label>
-                <select
-                  name="problemStatement"
-                  value={formData.problemStatement}
-                  onChange={handleFormChange}
-                  required
-                  className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-lg text-white focus:border-cyan-400 focus:bg-white/10 transition"
-                >
-                  <option value="">Choose a problem...</option>
-                  {problems[formData.track]?.map(problem => (
-                    <option key={problem} value={problem}>{problem}</option>
-                  ))}
-                </select>
               </div>
-            )}
-          </div>
+            </motion.div>
 
-          {/* Team Members */}
-          <div className="space-y-4 border-t border-cyan-500/20 pt-6">
-            <h2 className="text-xl font-bold text-cyan-400">Team Members (Optional)</h2>
-            <p className="text-sm text-gray-400">Add up to 4 additional team members</p>
+            {/* Team Members */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              style={{ marginBottom: '30px' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <label
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    color: '#64b5f6',
+                    fontFamily: "'Orbitron', sans-serif",
+                  }}
+                >
+                  Team Members *
+                </label>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={addMember}
+                  disabled={teamMembers.length >= 5}
+                  style={{
+                    padding: '8px 16px',
+                    background: teamMembers.length >= 5 ? '#666' : 'linear-gradient(135deg, #00bcd4 0%, #64b5f6 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    cursor: teamMembers.length >= 5 ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  + Add Member
+                </motion.button>
+              </div>
 
-            {teamMembers.map((member, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-3 p-4 bg-white/5 rounded-lg border border-cyan-500/20"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-cyan-400">Member {idx + 1}</span>
-                  {idx > 0 && (
-                    <button
+              {teamMembers.map((member, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.1 }}
+                  style={{
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(100,181,246,0.2)',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    marginBottom: '15px',
+                    position: 'relative',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gap: '15px',
+                      marginBottom: '15px',
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Member name"
+                      value={member.name}
+                      onChange={(e) => updateMember(idx, 'name', e.target.value)}
+                      style={{
+                        padding: '10px 14px',
+                        background: 'rgba(0,0,0,0.5)',
+                        border: '1px solid rgba(100,181,246,0.3)',
+                        borderRadius: '8px',
+                        color: '#e0e0e0',
+                        fontSize: '0.95rem',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Member email"
+                      value={member.email}
+                      onChange={(e) => updateMember(idx, 'email', e.target.value)}
+                      style={{
+                        padding: '10px 14px',
+                        background: 'rgba(0,0,0,0.5)',
+                        border: '1px solid rgba(100,181,246,0.3)',
+                        borderRadius: '8px',
+                        color: '#e0e0e0',
+                        fontSize: '0.95rem',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                    <select
+                      value={member.role}
+                      onChange={(e) => updateMember(idx, 'role', e.target.value)}
+                      style={{
+                        padding: '10px 14px',
+                        background: 'rgba(0,0,0,0.5)',
+                        border: '1px solid rgba(100,181,246,0.3)',
+                        borderRadius: '8px',
+                        color: '#e0e0e0',
+                        fontSize: '0.95rem',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {roles.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {teamMembers.length > 1 && (
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       type="button"
                       onClick={() => removeMember(idx)}
-                      className="text-red-400 hover:text-red-300 text-sm"
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '30px',
+                        height: '30px',
+                        cursor: 'pointer',
+                        fontSize: '1.2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      Remove
-                    </button>
+                      ×
+                    </motion.button>
                   )}
-                </div>
+                </motion.div>
+              ))}
+            </motion.div>
 
-                <input
-                  type="text"
-                  placeholder="Full name"
-                  value={member.name}
-                  onChange={(e) => handleMemberChange(idx, 'name', e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition text-sm"
-                />
+            {/* Submit Button */}
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(100,181,246,0.6)' }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '16px 20px',
+                background: 'linear-gradient(135deg, #64b5f6 0%, #2196f3 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 0 30px rgba(100,181,246,0.4)',
+                transition: 'all 0.3s ease',
+                fontFamily: "'Orbitron', sans-serif",
+                letterSpacing: '1px',
+              }}
+            >
+              Register Team →
+            </motion.button>
+          </form>
+        </motion.div>
 
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={member.email}
-                  onChange={(e) => handleMemberChange(idx, 'email', e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition text-sm"
-                />
-
-                <input
-                  type="tel"
-                  placeholder="Phone"
-                  value={member.phone}
-                  onChange={(e) => handleMemberChange(idx, 'phone', e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-cyan-500/30 rounded-lg text-white placeholder-gray-500 focus:border-cyan-400 focus:bg-white/10 transition text-sm"
-                />
-              </motion.div>
-            ))}
-
-            {teamMembers.length < 5 && (
-              <motion.button
-                type="button"
-                onClick={addMember}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-3 border-2 border-dashed border-cyan-400/50 rounded-lg text-cyan-400 font-semibold hover:border-cyan-400 hover:bg-cyan-400/5 transition"
-              >
-                + Add Team Member
-              </motion.button>
-            )}
-          </div>
-
-          {/* Submit */}
-          <motion.button
-            type="submit"
-            disabled={loading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-cyan-400/50 transition"
-          >
-            {loading ? 'Registering...' : 'Proceed to Payment'}
-          </motion.button>
-        </motion.form>
+        {/* Info Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          style={{
+            marginTop: '60px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '30px',
+          }}
+        >
+          {[
+            { icon: '👥', title: '2-5 Members', desc: 'Build diverse teams with different skills' },
+            { icon: '⏰', title: 'Quick Signup', desc: 'Register in less than 5 minutes' },
+            { icon: '🎯', title: 'All Levels', desc: 'Beginners to experts welcome' },
+          ].map((info, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ y: -10 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(100,181,246,0.1) 0%, rgba(0,188,212,0.1) 100%)',
+                border: '1px solid rgba(100,181,246,0.2)',
+                borderRadius: '12px',
+                padding: '30px 20px',
+                textAlign: 'center',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{info.icon}</div>
+              <h3 style={{ color: '#64b5f6', fontWeight: 'bold', marginBottom: '8px' }}>
+                {info.title}
+              </h3>
+              <p style={{ color: '#bdbdbd' }}>{info.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </div>
   );

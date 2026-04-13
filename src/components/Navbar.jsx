@@ -1,130 +1,172 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const location = useLocation();
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) setIsOpen(false);
+    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Tracks', path: '/tracks' },
-    { name: 'Problems', path: '/problems' },
-    { name: 'Team', path: '/team' },
-    { name: 'Contact', path: '/contact' }
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Tracks", path: "/tracks" },
+    { name: "Problems", path: "/problems" },
+    { name: "Team", path: "/team" },
   ];
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="fixed w-full top-0 z-50 backdrop-blur-md bg-black/30 border-b border-cyan-500/20">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">H</span>
-            </div>
-            <span className="text-white font-bold text-xl hidden sm:inline">Hackathon</span>
-          </Link>
+    <nav style={{
+      ...styles.nav,
+      // Forces the background to be dark even at the very top for visibility
+      backgroundColor: scrolled || isOpen ? "rgba(2, 6, 15, 0.98)" : "rgba(2, 6, 15, 0.85)",
+      borderBottom: scrolled ? "1px solid rgba(34, 211, 238, 0.3)" : "1px solid rgba(255, 255, 255, 0.1)",
+    }}>
+      <div style={styles.container}>
+        
+        {/* LOGO */}
+        <Link to="/" style={styles.logo} onClick={() => setIsOpen(false)}>
+          <div style={styles.logoBox}>
+            <img src="/nexiotLogo.jpg" alt="Logo" style={styles.logoImg} />
+          </div>
+          <span style={styles.logoText}>Nexiot</span>
+        </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+        {/* DESKTOP MENU */}
+        {!isMobile && (
+          <div style={styles.navLinks}>
             {navItems.map((item) => (
-              <Link key={item.path} to={item.path}>
-                <motion.div
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive(item.path) 
-                      ? 'text-cyan-400' 
-                      : 'text-gray-300 hover:text-cyan-400'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
+              <Link key={item.path} to={item.path} style={styles.navItem}>
+                <span style={{
+                  ...styles.linkText,
+                  color: isActive(item.path) ? "#22d3ee" : "#f8fafc",
+                }}>
                   {item.name}
-                  {isActive(item.path) && (
-                    <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500"
-                      layoutId="navbar-underline"
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
-                </motion.div>
+                </span>
+                {isActive(item.path) && <div style={styles.activeLine} />}
               </Link>
             ))}
+            <Link to="/register" style={styles.registerBtn}>Register</Link>
           </div>
-
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 text-cyan-400 border border-cyan-400 rounded-lg hover:bg-cyan-400/10 transition"
-              >
-                Login
-              </motion.button>
-            </Link>
-            <Link to="/register">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-2 bg-gradient-to-r from-cyan-400 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-400/50 transition"
-              >
-                Register
-              </motion.button>
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <motion.button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-cyan-400"
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </motion.button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="md:hidden mt-4 space-y-2"
-          >
-            {navItems.map((item) => (
-              <Link key={item.path} to={item.path} onClick={() => setIsOpen(false)}>
-                <div className={`px-4 py-2 rounded-lg ${
-                  isActive(item.path)
-                    ? 'bg-cyan-400/20 text-cyan-400'
-                    : 'text-gray-300 hover:bg-gray-800'
-                }`}>
-                  {item.name}
-                </div>
-              </Link>
-            ))}
-            <div className="pt-2 space-y-2">
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <div className="px-4 py-2 border border-cyan-400 text-cyan-400 rounded-lg text-center">
-                  Login
-                </div>
-              </Link>
-              <Link to="/register" onClick={() => setIsOpen(false)}>
-                <div className="px-4 py-2 bg-cyan-400 text-black rounded-lg text-center font-semibold">
-                  Register
-                </div>
-              </Link>
-            </div>
-          </motion.div>
         )}
+
+        {/* MOBILE TOGGLE */}
+        {isMobile && (
+          <div style={styles.hamburger} onClick={() => setIsOpen(!isOpen)}>
+            <div style={{...styles.line, transform: isOpen ? "rotate(45deg) translate(6px, 6px)" : "none", backgroundColor: "#22d3ee"}}></div>
+            <div style={{...styles.line, opacity: isOpen ? 0 : 1}}></div>
+            <div style={{...styles.line, transform: isOpen ? "rotate(-45deg) translate(6px, -6px)" : "none", backgroundColor: "#22d3ee"}}></div>
+          </div>
+        )}
+      </div>
+
+      {/* MOBILE MENU OVERLAY */}
+      <div style={{
+        ...styles.mobileMenu,
+        maxHeight: isOpen ? "100vh" : "0px",
+        opacity: isOpen ? 1 : 0,
+        visibility: isOpen ? "visible" : "hidden",
+      }}>
+        <div style={styles.mobileLinkContainer}>
+          {navItems.map((item) => (
+            <Link 
+              key={item.path} 
+              to={item.path} 
+              onClick={() => setIsOpen(false)} 
+              style={{
+                ...styles.mobileLink,
+                color: isActive(item.path) ? "#22d3ee" : "#f8fafc"
+              }}
+            >
+              {item.name}
+            </Link>
+          ))}
+          <Link to="/register" onClick={() => setIsOpen(false)} style={styles.mobileRegister}>
+            Register Now
+          </Link>
+        </div>
       </div>
     </nav>
   );
+};
+
+const styles = {
+  nav: {
+    // CRITICAL FIXES FOR VISIBILITY
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    width: "100%",
+    zIndex: 99999, // Extremely high to stay above 3D fiber and other sections
+    height: "80px",
+    display: "flex",
+    alignItems: "center",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    padding: "0 24px",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+  },
+  container: {
+    maxWidth: "1300px",
+    width: "100%",
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    zIndex: 100000,
+  },
+  logo: { display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" },
+  logoBox: { width: "34px", height: "34px", borderRadius: "8px", overflow: "hidden", border: "1px solid rgba(34, 211, 238, 0.3)" },
+  logoImg: { width: "100%", height: "100%", objectFit: "cover" },
+  logoText: { fontSize: "22px", fontWeight: "900", color: "#fff", letterSpacing: "-0.03em" },
+  navLinks: { display: "flex", gap: "35px", alignItems: "center" },
+  navItem: { position: "relative", textDecoration: "none", padding: "10px 0" },
+  linkText: { fontSize: "14px", fontWeight: "600", transition: "0.3s" },
+  activeLine: { position: "absolute", bottom: "-5px", left: 0, width: "100%", height: "2px", background: "#22d3ee", boxShadow: "0 0 10px #22d3ee" },
+  registerBtn: { backgroundColor: "#22d3ee", color: "#020617", padding: "10px 24px", borderRadius: "8px", textDecoration: "none", fontSize: "14px", fontWeight: "800" },
+  hamburger: { display: "flex", flexDirection: "column", gap: "6px", cursor: "pointer" },
+  line: { width: "28px", height: "2.5px", transition: "0.3s ease", borderRadius: "2px" },
+  mobileMenu: {
+    position: "fixed", // Changed to fixed
+    top: "0",
+    left: 0,
+    right: 0,
+    height: "100vh",
+    backgroundColor: "#020611",
+    zIndex: 99998, // Just below the main nav bar
+    transition: "all 0.5s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mobileLinkContainer: {
+    display: "flex",
+    flexDirection: "column",
+    textAlign: "center",
+    gap: "20px",
+    width: "80%",
+  },
+  mobileLink: { fontSize: "24px", textDecoration: "none", fontWeight: "700", padding: "15px" },
+  mobileRegister: { backgroundColor: "#22d3ee", color: "#020617", padding: "16px", borderRadius: "12px", textDecoration: "none", fontWeight: "800", marginTop: "20px" }
 };
 
 export default Navbar;

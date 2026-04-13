@@ -5,7 +5,9 @@ import { motion } from 'framer-motion';
 import * as THREE from 'three';
 import AnimatedButton from '../Common/AnimatedButton';
 
-// Particle Globe Component (Optimized)
+
+import './HeroSectionEnhanced.css';
+
 function ParticleGlobeOptimized() {
   const groupRef = useRef();
   const particlesRef = useRef();

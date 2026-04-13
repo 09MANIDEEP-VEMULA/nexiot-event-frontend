@@ -1,246 +1,531 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+// src/pages/Payment.jsx
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { paymentAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const Payment = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [paymentStep, setPaymentStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const teamId = location.state?.teamId || localStorage.getItem('teamId');
-  const teamName = location.state?.teamName || localStorage.getItem('teamName');
-
-  const REGISTRATION_FEE = 499; // in INR
-
-  useEffect(() => {
-    if (!teamId) {
-      navigate('/register');
-    }
-    
-    // Load Razorpay script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    document.body.appendChild(script);
-  }, [teamId, navigate]);
+  const teamName = 'Tech Innovators';
+  const amountInPaisa = 500000; // ₹5000 in paisa
+  const amount = (amountInPaisa / 100).toFixed(2);
 
   const handlePayment = async () => {
-    setError('');
-    setPaymentProcessing(true);
-
-    try {
-      // Initiate payment
-      const response = await paymentAPI.initiatePayment({
-        teamId,
-        amount: REGISTRATION_FEE,
-        teamName
-      });
-
-      const { orderId } = response.data;
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: REGISTRATION_FEE * 100, // Razorpay expects amount in paise
-        currency: 'INR',
-        name: 'Hackathon 2024',
-        description: 'Event Registration',
-        order_id: orderId,
-        handler: handlePaymentSuccess,
-        prefill: {
-          name: teamName,
-          email: localStorage.getItem('userEmail') || '',
-          contact: localStorage.getItem('userPhone') || ''
-        },
-        theme: {
-          color: '#64b5f6'
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Payment initiation failed');
-    } finally {
-      setPaymentProcessing(false);
-    }
-  };
-
-  const handlePaymentSuccess = async (paymentResponse) => {
-    try {
-      setLoading(true);
-      
-      // Verify payment
-      const verifyResponse = await paymentAPI.verifyPayment({
-        teamId,
-        razorpayPaymentId: paymentResponse.razorpay_payment_id,
-        razorpayOrderId: paymentResponse.razorpay_order_id,
-        razorpaySignature: paymentResponse.razorpay_signature
-      });
-
-      if (verifyResponse.data.success) {
-        // Store payment details
-        localStorage.setItem('paymentStatus', 'completed');
-        localStorage.setItem('paymentId', verifyResponse.data.paymentId);
-
-        // Redirect to success page or dashboard
-        navigate('/dashboard', { state: { paymentSuccess: true } });
-      } else {
-        setError('Payment verification failed');
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Payment verification failed');
-    } finally {
-      setLoading(false);
-    }
+    setIsProcessing(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setPaymentStep(3);
+      setIsProcessing(false);
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gradient-to-b from-black via-blue-950/20 to-black">
-      <div className="max-w-2xl mx-auto px-6">
+    <div
+      style={{
+        background: 'linear-gradient(135deg, #000000 0%, #0a0e27 50%, #000000 100%)',
+        minHeight: '100vh',
+        paddingTop: '100px',
+        paddingBottom: '60px',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {/* 3D Background */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'fixed',
+          top: -300,
+          right: -300,
+          width: 600,
+          height: 600,
+          background: 'radial-gradient(circle, rgba(255,152,0,0.15) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(50px)',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        style={{
+          maxWidth: '900px',
+          margin: '0 auto',
+          padding: '0 20px',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          transition={{ duration: 0.8 }}
+          style={{
+            textAlign: 'center',
+            marginBottom: '50px',
+          }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-neon">
-            Complete Payment
+          <h1
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #ff9800, #f57c00)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              marginBottom: '15px',
+              fontFamily: "'Orbitron', sans-serif",
+              letterSpacing: '2px',
+            }}
+          >
+            Payment Gateway
           </h1>
-          <p className="text-gray-400">
-            Secure your spot in the hackathon
+          <p style={{ fontSize: '1.125rem', color: '#bdbdbd' }}>
+            Complete your registration by paying the fee
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Order Summary */}
+        {/* Progress Steps */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: '50px',
+            position: 'relative',
+          }}
+        >
+          {/* Progress line */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: 0,
+              right: 0,
+              height: '2px',
+              background: 'rgba(100,181,246,0.2)',
+              zIndex: 0,
+            }}
+          />
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="card"
-          >
-            <h2 className="text-2xl font-bold mb-6 text-cyan-400">Order Summary</h2>
+            animate={{ width: paymentStep === 1 ? '33%' : paymentStep === 2 ? '66%' : '100%' }}
+            transition={{ duration: 0.5 }}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: 0,
+              height: '2px',
+              background: 'linear-gradient(90deg, #ff9800, #f57c00)',
+              zIndex: 1,
+            }}
+          />
 
-            <div className="space-y-4 mb-6">
-              <div className="flex justify-between items-center py-3 border-b border-cyan-500/20">
-                <span className="text-gray-300">Team Name</span>
-                <span className="font-semibold">{teamName || 'Loading...'}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-3 border-b border-cyan-500/20">
-                <span className="text-gray-300">Event Registration</span>
-                <span className="font-semibold">₹{REGISTRATION_FEE}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-3 text-lg font-bold border-t-2 border-cyan-500/50">
-                <span>Total Amount</span>
-                <span className="text-cyan-400">₹{REGISTRATION_FEE}</span>
-              </div>
+          {[
+            { step: 1, label: 'Order Review', icon: '📋' },
+            { step: 2, label: 'Payment Method', icon: '💳' },
+            { step: 3, label: 'Confirmation', icon: '✓' },
+          ].map((item) => (
+            <div
+              key={item.step}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flex: 1,
+                position: 'relative',
+                zIndex: 2,
+              }}
+            >
+              <motion.div
+                animate={{
+                  scale: paymentStep >= item.step ? 1.2 : 1,
+                  background: paymentStep >= item.step
+                    ? 'linear-gradient(135deg, #ff9800, #f57c00)'
+                    : 'rgba(100,100,100,0.3)',
+                }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  border: `2px solid ${paymentStep >= item.step ? '#ff9800' : 'rgba(100,100,100,0.5)'}`,
+                  marginBottom: '12px',
+                  color: paymentStep >= item.step ? 'white' : '#666',
+                }}
+              >
+                {paymentStep > item.step ? '✓' : item.icon}
+              </motion.div>
+              <p
+                style={{
+                  fontSize: '0.9rem',
+                  color: paymentStep >= item.step ? '#ff9800' : '#666',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
+              >
+                {item.label}
+              </p>
             </div>
+          ))}
+        </motion.div>
 
-            {/* Benefits */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-cyan-400 mb-3">What's Included:</h3>
-              {[
-                '48-hour hackathon access',
-                'Free meals & refreshments',
-                'Certificate of participation',
-                'Mentorship sessions',
-                'Prize eligibility',
-                'Networking opportunities'
-              ].map((benefit, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + idx * 0.05 }}
-                  className="flex items-center gap-3"
+        {/* Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          {/* Step 1: Order Review */}
+          {paymentStep === 1 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(45,45,45,0.8) 0%, rgba(26,26,26,0.8) 100%)',
+                border: '2px solid rgba(255,152,0,0.2)',
+                borderRadius: '20px',
+                padding: '50px 40px',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 'bold',
+                  color: '#ff9800',
+                  marginBottom: '30px',
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                Order Summary
+              </h2>
+
+              <div style={{ display: 'grid', gap: '20px', marginBottom: '40px' }}>
+                <div
+                  style={{
+                    padding: '25px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,152,0,0.2)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
                 >
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                  <span className="text-gray-300">{benefit}</span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Payment Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="card flex flex-col justify-between"
-          >
-            <div>
-              <h2 className="text-2xl font-bold mb-6 text-cyan-400">Payment Details</h2>
-
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400 mb-6"
-                >
-                  {error}
-                </motion.div>
-              )}
-
-              <div className="space-y-4 mb-8">
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Amount to Pay</label>
-                  <div className="text-3xl font-bold text-cyan-400">
-                    ₹{REGISTRATION_FEE}
+                  <div>
+                    <p style={{ color: '#bdbdbd', fontSize: '0.95rem', marginBottom: '5px' }}>
+                      Team Name
+                    </p>
+                    <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white' }}>
+                      {teamName}
+                    </p>
                   </div>
+                  <div style={{ fontSize: '2rem' }}>👥</div>
                 </div>
 
-                <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                  <p className="text-sm text-blue-300">
-                    ✓ Secure payment powered by Razorpay
-                  </p>
-                  <p className="text-sm text-blue-300 mt-1">
-                    ✓ Your payment information is encrypted
-                  </p>
+                <div
+                  style={{
+                    padding: '25px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,152,0,0.2)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <p style={{ color: '#bdbdbd', fontSize: '0.95rem', marginBottom: '5px' }}>
+                      Registration Fee
+                    </p>
+                    <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white' }}>
+                      ₹{amount}
+                    </p>
+                  </div>
+                  <div style={{ fontSize: '2rem' }}>💰</div>
+                </div>
+
+                <div
+                  style={{
+                    padding: '25px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,152,0,0.2)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <p style={{ color: '#bdbdbd', fontSize: '0.95rem', marginBottom: '5px' }}>
+                      Total Amount
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '1.75rem',
+                        fontWeight: 'bold',
+                        color: '#ff9800',
+                        fontFamily: "'Orbitron', sans-serif",
+                      }}
+                    >
+                      ₹{amount}
+                    </p>
+                  </div>
+                  <div style={{ fontSize: '2rem' }}>🎯</div>
                 </div>
               </div>
 
               <motion.button
-                onClick={handlePayment}
-                disabled={loading || paymentProcessing}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-cyan-400/50 transition text-lg"
+                whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(255,152,0,0.6)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setPaymentStep(2)}
+                style={{
+                  width: '100%',
+                  padding: '16px 20px',
+                  background: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 30px rgba(255,152,0,0.4)',
+                  transition: 'all 0.3s ease',
+                }}
               >
-                {loading || paymentProcessing ? 'Processing...' : 'Pay Now'}
+                Proceed to Payment →
               </motion.button>
+            </motion.div>
+          )}
 
-              <p className="text-xs text-gray-500 text-center mt-4">
-                By proceeding, you agree to our terms and conditions
+          {/* Step 2: Payment Method */}
+          {paymentStep === 2 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(45,45,45,0.8) 0%, rgba(26,26,26,0.8) 100%)',
+                border: '2px solid rgba(255,152,0,0.2)',
+                borderRadius: '20px',
+                padding: '50px 40px',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 'bold',
+                  color: '#ff9800',
+                  marginBottom: '30px',
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                Select Payment Method
+              </h2>
+
+              <div style={{ display: 'grid', gap: '20px', marginBottom: '40px' }}>
+                {[
+                  { id: 'razorpay', name: 'Razorpay', icon: '💳', desc: 'Secure payment gateway' },
+                  { id: 'upi', name: 'UPI', icon: '📱', desc: 'Direct bank transfer' },
+                  { id: 'netbanking', name: 'Net Banking', icon: '🏦', desc: 'All major banks' },
+                ].map((method) => (
+                  <motion.button
+                    key={method.id}
+                    whileHover={{ scale: 1.02 }}
+                    type="button"
+                    onClick={() => setPaymentMethod(method.id)}
+                    style={{
+                      padding: '25px',
+                      background: paymentMethod === method.id
+                        ? 'linear-gradient(135deg, rgba(255,152,0,0.3), rgba(245,124,0,0.3))'
+                        : 'rgba(0,0,0,0.3)',
+                      border: paymentMethod === method.id ? '2px solid #ff9800' : '1px solid rgba(255,152,0,0.2)',
+                      borderRadius: '12px',
+                      color: 'white',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '20px',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <div style={{ fontSize: '2.5rem' }}>{method.icon}</div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '5px' }}>
+                        {method.name}
+                      </p>
+                      <p style={{ color: '#bdbdbd', fontSize: '0.9rem' }}>{method.desc}</p>
+                    </div>
+                    {paymentMethod === method.id && (
+                      <div style={{ fontSize: '1.5rem', color: '#ff9800' }}>✓</div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPaymentStep(1)}
+                  style={{
+                    flex: 1,
+                    padding: '14px 20px',
+                    background: 'transparent',
+                    color: '#ff9800',
+                    border: '2px solid #ff9800',
+                    borderRadius: '10px',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ← Back
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(255,152,0,0.6)' }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handlePayment}
+                  disabled={isProcessing}
+                  style={{
+                    flex: 1,
+                    padding: '14px 20px',
+                    background: isProcessing ? '#666' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: isProcessing ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 0 30px rgba(255,152,0,0.4)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  {isProcessing ? '⏳ Processing...' : 'Pay ₹' + amount}
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step 3: Confirmation */}
+          {paymentStep === 3 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(45,45,45,0.8) 0%, rgba(26,26,26,0.8) 100%)',
+                border: '2px solid rgba(76,175,80,0.3)',
+                borderRadius: '20px',
+                padding: '60px 40px',
+                backdropFilter: 'blur(10px)',
+                textAlign: 'center',
+              }}
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 1, times: [0, 0.5, 1] }}
+                style={{
+                  fontSize: '4rem',
+                  marginBottom: '20px',
+                }}
+              >
+                ✓
+              </motion.div>
+
+              <h2
+                style={{
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
+                  color: '#4caf50',
+                  marginBottom: '15px',
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
+              >
+                Payment Successful!
+              </h2>
+
+              <p style={{ color: '#bdbdbd', fontSize: '1.05rem', marginBottom: '30px', lineHeight: '1.6' }}>
+                Thank you for registering! Your team {teamName} is now officially part of Hackathon 2024.
+                You will receive a confirmation email shortly.
               </p>
-            </div>
-          </motion.div>
-        </div>
 
-        {/* FAQ Section */}
+              <div
+                style={{
+                  padding: '25px',
+                  background: 'rgba(0,0,0,0.3)',
+                  borderRadius: '12px',
+                  marginBottom: '30px',
+                  border: '1px solid rgba(76,175,80,0.3)',
+                }}
+              >
+                <p style={{ color: '#bdbdbd', marginBottom: '10px' }}>Transaction ID</p>
+                <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#64b5f6' }}>
+                  TXN_{Date.now()}
+                </p>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/dashboard')}
+                style={{
+                  width: '100%',
+                  padding: '16px 20px',
+                  background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 30px rgba(76,175,80,0.4)',
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Go to Dashboard →
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* Security Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-12 card"
+          transition={{ duration: 0.8, delay: 0.4 }}
+          style={{
+            marginTop: '40px',
+            padding: '25px',
+            background: 'linear-gradient(135deg, rgba(255,152,0,0.1) 0%, rgba(245,124,0,0.1) 100%)',
+            border: '1px solid rgba(255,152,0,0.2)',
+            borderRadius: '12px',
+            textAlign: 'center',
+            backdropFilter: 'blur(10px)',
+          }}
         >
-          <h3 className="text-xl font-bold mb-4 text-cyan-400">Payment Information</h3>
-          <div className="space-y-4 text-sm text-gray-300">
-            <div>
-              <p className="font-semibold text-cyan-400 mb-1">Is my payment secure?</p>
-              <p>Yes, we use Razorpay, a trusted payment gateway with end-to-end encryption.</p>
-            </div>
-            <div>
-              <p className="font-semibold text-cyan-400 mb-1">What payment methods are accepted?</p>
-              <p>We accept credit cards, debit cards, UPI, net banking, and digital wallets.</p>
-            </div>
-            <div>
-              <p className="font-semibold text-cyan-400 mb-1">Can I get a refund?</p>
-              <p>Refunds are processed within 7-10 business days if requested before the event.</p>
-            </div>
-          </div>
+          <p style={{ color: '#bdbdbd', marginBottom: '8px' }}>
+            🔒 Your payment is secured with industry-standard encryption
+          </p>
+          <p style={{ color: '#9e9e9e', fontSize: '0.9rem' }}>
+            All transactions are processed securely through trusted payment gateways
+          </p>
         </motion.div>
       </div>
     </div>

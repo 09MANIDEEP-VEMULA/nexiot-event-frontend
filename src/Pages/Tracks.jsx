@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { NeonText, StreamingText } from '../components/Effects/NeonEffects';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const Tracks = () => {
   const [selectedTrack, setSelectedTrack] = useState(null);
@@ -8,261 +7,215 @@ const Tracks = () => {
   const tracks = [
     {
       id: 1,
-      name: 'AI & Machine Learning',
-      icon: '🤖',
-      color: 'from-purple-600 to-purple-900',
-      description: 'Build intelligent systems using the latest AI and ML technologies',
-      prize: '₹2,00,000',
-      technologies: ['TensorFlow', 'PyTorch', 'OpenAI', 'Hugging Face'],
+      name: "AI & Machine Learning",
+      icon: "🤖",
+      color: "#7c3aed",
+      description: "Build intelligent systems using AI/ML",
+      prize: "₹2,00,000",
+      technologies: ["TensorFlow", "PyTorch", "OpenAI", "Hugging Face"],
       problems: [
-        'Develop AI-powered chatbot for customer support',
-        'Create ML model for predictive analytics',
-        'Build computer vision application',
+        "AI chatbot for support system",
+        "ML prediction engine",
+        "Computer vision app",
       ],
-      difficulty: 'Advanced',
+      difficulty: "Advanced",
     },
     {
       id: 2,
-      name: 'Web Development',
-      icon: '🌐',
-      color: 'from-blue-600 to-blue-900',
-      description: 'Create stunning web applications with modern frameworks',
-      prize: '₹1,50,000',
-      technologies: ['React', 'Vue', 'Next.js', 'TypeScript'],
+      name: "Web Development",
+      icon: "🌐",
+      color: "#2563eb",
+      description: "Modern full-stack web applications",
+      prize: "₹1,50,000",
+      technologies: ["React", "Next.js", "Node.js", "TypeScript"],
       problems: [
-        'Build collaborative project management platform',
-        'Create real-time chat application',
-        'Develop e-commerce platform with payment integration',
+        "Realtime chat app",
+        "E-commerce platform",
+        "Project management tool",
       ],
-      difficulty: 'Intermediate',
+      difficulty: "Intermediate",
     },
     {
       id: 3,
-      name: 'Mobile Development',
-      icon: '📱',
-      color: 'from-green-600 to-green-900',
-      description: 'Develop mobile apps that solve real-world problems',
-      prize: '₹1,50,000',
-      technologies: ['React Native', 'Flutter', 'Swift', 'Kotlin'],
-      problems: [
-        'Create fitness tracking application',
-        'Build social networking app',
-        'Develop productivity suite for mobile',
-      ],
-      difficulty: 'Intermediate',
-    },
-    {
-      id: 4,
-      name: 'IoT & Embedded Systems',
-      icon: '⚙️',
-      color: 'from-yellow-600 to-yellow-900',
-      description: 'Connect the physical and digital worlds with IoT solutions',
-      prize: '₹1,50,000',
-      technologies: ['Arduino', 'Raspberry Pi', 'MQTT', 'Edge Computing'],
-      problems: [
-        'Build smart home automation system',
-        'Create environmental monitoring device',
-        'Develop industrial IoT solution',
-      ],
-      difficulty: 'Advanced',
-    },
-    {
-      id: 5,
-      name: 'Blockchain & Web3',
-      icon: '⛓️',
-      color: 'from-orange-600 to-orange-900',
-      description: 'Explore decentralized technologies and build Web3 applications',
-      prize: '₹1,75,000',
-      technologies: ['Solidity', 'Ethereum', 'Web3.js', 'Smart Contracts'],
-      problems: [
-        'Create decentralized voting system',
-        'Build NFT marketplace',
-        'Develop DeFi application',
-      ],
-      difficulty: 'Advanced',
-    },
-    {
-      id: 6,
-      name: 'Cybersecurity',
-      icon: '🔒',
-      color: 'from-red-600 to-red-900',
-      description: 'Secure applications and protect against cyber threats',
-      prize: '₹1,50,000',
-      technologies: ['Cryptography', 'Network Security', 'Penetration Testing'],
-      problems: [
-        'Build secure authentication system',
-        'Create vulnerability assessment tool',
-        'Develop security monitoring platform',
-      ],
-      difficulty: 'Advanced',
+      name: "Mobile Development",
+      icon: "📱",
+      color: "#16a34a",
+      description: "Cross-platform mobile applications",
+      prize: "₹1,50,000",
+      technologies: ["Flutter", "React Native", "Swift", "Kotlin"],
+      problems: ["Fitness app", "Social media app", "Productivity app"],
+      difficulty: "Intermediate",
     },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8 },
-    },
-  };
-
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gradient-to-b from-black via-blue-950/20 to-black">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            <NeonText color="cyan">Hackathon Tracks</NeonText>
+    <div
+      style={{
+        minHeight: "100vh",
+        paddingTop: "90px",
+        paddingBottom: "60px",
+        background: "radial-gradient(circle at top, #0a0a0a, #050b1a)",
+        color: "white",
+      }}
+    >
+      <div style={{ maxWidth: "1200px", margin: "auto", padding: "20px" }}>
+        {/* HEADER */}
+        <div style={{ textAlign: "center", marginBottom: "50px" }}>
+          <h1 style={{ fontSize: "42px", fontWeight: "bold" }}>
+            <span style={{ color: "#00e5ff" }}>Hackathon Tracks</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Choose your track and compete with brilliant minds across different domains
+          <p style={{ color: "#aaa", marginTop: "10px" }}>
+            Choose your domain and build something amazing 🚀
           </p>
-        </motion.div>
+        </div>
 
-        {/* Tracks Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+        {/* GRID */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+            gap: "20px",
+          }}
         >
           {tracks.map((track) => (
             <motion.div
               key={track.id}
-              variants={itemVariants}
               onClick={() => setSelectedTrack(track.id)}
-              className="cursor-pointer group"
+              whileHover={{ scale: 1.03 }}
+              style={{
+                padding: "20px",
+                borderRadius: "16px",
+                cursor: "pointer",
+                background:
+                  "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(0,255,255,0.15)",
+                backdropFilter: "blur(10px)",
+                boxShadow: "0 0 20px rgba(0,255,255,0.05)",
+              }}
             >
-              <div className={`relative overflow-hidden rounded-xl border border-gray-700/50 p-8 h-full transition-all duration-300 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/20 bg-gradient-to-br ${track.color} bg-opacity-10`}>
-                {/* Background gradient */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{
-                  background: `linear-gradient(135deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%)`,
-                  opacity: 0.05,
-                }} />
+              <div style={{ fontSize: "40px" }}>{track.icon}</div>
 
-                <div className="relative z-10">
-                  <div className="text-5xl mb-4">{track.icon}</div>
-                  <h3 className="text-2xl font-bold text-white mb-3">{track.name}</h3>
-                  <p className="text-gray-300 mb-4">{track.description}</p>
+              <h2 style={{ fontSize: "20px", marginTop: "10px" }}>
+                {track.name}
+              </h2>
 
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-cyan-400 font-bold">Prize:</span>
-                      <span className="text-white font-bold">{track.prize}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-cyan-400 font-bold">Level:</span>
-                      <span className="text-white">{track.difficulty}</span>
-                    </div>
-                  </div>
+              <p style={{ color: "#aaa", fontSize: "14px", marginTop: "5px" }}>
+                {track.description}
+              </p>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition mt-4"
-                  >
-                    View Details
-                  </motion.button>
-                </div>
+              <div style={{ marginTop: "10px", fontSize: "13px" }}>
+                <p>
+                  💰 <b style={{ color: "#00e5ff" }}>{track.prize}</b>
+                </p>
+                <p>
+                  ⚡ <b>{track.difficulty}</b>
+                </p>
               </div>
+
+              <button
+                style={{
+                  marginTop: "15px",
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: "linear-gradient(90deg,#00e5ff,#3b82f6)",
+                  color: "black",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                View Details
+              </button>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Selected Track Details */}
+        {/* DETAILS SECTION */}
         {selectedTrack && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="card mb-16"
+          <div
+            style={{
+              marginTop: "40px",
+              padding: "25px",
+              borderRadius: "16px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(0,255,255,0.2)",
+              backdropFilter: "blur(10px)",
+            }}
           >
             {(() => {
-              const track = tracks.find(t => t.id === selectedTrack);
+              const track = tracks.find((t) => t.id === selectedTrack);
+
               return (
                 <>
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h2 className="text-3xl font-bold text-white mb-2">{track.name}</h2>
-                      <p className="text-gray-400">{track.description}</p>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <h2 style={{ fontSize: "26px" }}>{track.name}</h2>
+
+                    <span
+                      style={{ cursor: "pointer", color: "#aaa" }}
                       onClick={() => setSelectedTrack(null)}
-                      className="text-2xl text-gray-400 hover:text-white"
                     >
                       ✕
-                    </motion.button>
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                    <div>
-                      <h4 className="text-lg font-bold text-cyan-400 mb-4">Technologies</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {track.technologies.map((tech, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-cyan-600/20 border border-cyan-500/50 rounded-full text-cyan-300 text-sm">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                  <p style={{ color: "#aaa", marginBottom: "20px" }}>
+                    {track.description}
+                  </p>
 
-                    <div>
-                      <h4 className="text-lg font-bold text-cyan-400 mb-4">Prize & Details</h4>
-                      <div className="space-y-2 text-gray-300">
-                        <p><span className="text-cyan-400">Prize Money:</span> {track.prize}</p>
-                        <p><span className="text-cyan-400">Difficulty:</span> {track.difficulty}</p>
-                      </div>
-                    </div>
+                  <h3 style={{ color: "#00e5ff" }}>Technologies</h3>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {track.technologies.map((t, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          padding: "5px 10px",
+                          borderRadius: "20px",
+                          background: "rgba(0,255,255,0.1)",
+                          border: "1px solid rgba(0,255,255,0.3)",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
 
-                  <div>
-                    <h4 className="text-lg font-bold text-cyan-400 mb-4">Problem Statements</h4>
-                    <div className="space-y-3">
-                      {track.problems.map((problem, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          className="flex gap-3 items-start p-3 bg-gray-800/50 rounded-lg"
-                        >
-                          <span className="text-cyan-400 font-bold">#{idx + 1}</span>
-                          <span className="text-gray-300">{problem}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
+                  <h3 style={{ color: "#00e5ff", marginTop: "20px" }}>
+                    Problems
+                  </h3>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => window.location.href = '/register'}
-                    className="w-full mt-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-400/50 transition"
+                  {track.problems.map((p, i) => (
+                    <p key={i} style={{ marginTop: "8px", color: "#ccc" }}>
+                      • {p}
+                    </p>
+                  ))}
+
+                  <button
+                    style={{
+                      marginTop: "20px",
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background:
+                        "linear-gradient(90deg,#00e5ff,#3b82f6)",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => (window.location.href = "/register")}
                   >
-                    Register for {track.name}
-                  </motion.button>
+                    Register Now
+                  </button>
                 </>
               );
             })()}
-          </motion.div>
+          </div>
         )}
       </div>
     </div>

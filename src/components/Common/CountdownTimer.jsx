@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
-export const CountdownTimer = ({ targetDate = '2024-12-31T00:00:00' }) => {
+export const CountdownTimer = ({ targetDate = "2024-12-31T00:00:00" }) => {
   const [time, setTime] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
+
     const timer = setInterval(() => {
       const now = new Date().getTime();
       const target = new Date(targetDate).getTime();
-      const difference = target - now;
+      const diff = target - now;
 
-      if (difference > 0) {
+      if (diff > 0) {
         setTime({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((diff / (1000 * 60)) % 60),
+          seconds: Math.floor((diff / 1000) % 60),
         });
       }
     }, 1000);
@@ -33,57 +34,87 @@ export const CountdownTimer = ({ targetDate = '2024-12-31T00:00:00' }) => {
 
   if (!mounted) return null;
 
-  const TimeUnit = ({ label, value }) => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center"
-    >
-      <div className="relative">
-        <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/50 flex items-center justify-center backdrop-blur-sm">
-          <motion.span
-            key={value}
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-3xl md:text-4xl font-bold text-cyan-400 font-mono"
-          >
-            {String(value).padStart(2, '0')}
-          </motion.span>
-        </div>
-      </div>
-      <span className="text-gray-400 text-sm md:text-base mt-2 uppercase tracking-widest">
-        {label}
-      </span>
-    </motion.div>
-  );
+  const boxStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "90px",
+    height: "90px",
+    borderRadius: "14px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(0,255,255,0.25)",
+    backdropFilter: "blur(10px)",
+    boxShadow: "0 0 20px rgba(0,255,255,0.08)",
+    color: "#00e5ff",
+    fontFamily: "monospace",
+  };
+
+  const labelStyle = {
+    fontSize: "11px",
+    marginTop: "8px",
+    color: "#aaa",
+    letterSpacing: "2px",
+    textTransform: "uppercase",
+  };
+
+  const numberStyle = {
+    fontSize: "26px",
+    fontWeight: "bold",
+  };
+
+  const colonStyle = {
+    fontSize: "26px",
+    fontWeight: "bold",
+    color: "#00e5ff",
+    margin: "0 8px",
+    animation: "pulse 1s infinite",
+  };
 
   return (
-    <div className="flex justify-center items-center gap-4 md:gap-8 py-8">
-      <TimeUnit label="Days" value={time.days} />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        className="text-2xl md:text-3xl text-cyan-400 font-bold"
-      >
-        :
-      </motion.div>
-      <TimeUnit label="Hours" value={time.hours} />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        className="text-2xl md:text-3xl text-cyan-400 font-bold"
-      >
-        :
-      </motion.div>
-      <TimeUnit label="Minutes" value={time.minutes} />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        className="text-2xl md:text-3xl text-cyan-400 font-bold"
-      >
-        :
-      </motion.div>
-      <TimeUnit label="Seconds" value={time.seconds} />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "10px",
+        padding: "20px 0",
+      }}
+    >
+      {/* DAYS */}
+      <div style={boxStyle}>
+        <div style={numberStyle}>{String(time.days).padStart(2, "0")}</div>
+        <div style={labelStyle}>Days</div>
+      </div>
+
+      <div style={colonStyle}>:</div>
+
+      {/* HOURS */}
+      <div style={boxStyle}>
+        <div style={numberStyle}>{String(time.hours).padStart(2, "0")}</div>
+        <div style={labelStyle}>Hours</div>
+      </div>
+
+      <div style={colonStyle}>:</div>
+
+      {/* MINUTES */}
+      <div style={boxStyle}>
+        <div style={numberStyle}>
+          {String(time.minutes).padStart(2, "0")}
+        </div>
+        <div style={labelStyle}>Minutes</div>
+      </div>
+
+      <div style={colonStyle}>:</div>
+
+      {/* SECONDS */}
+      <div style={boxStyle}>
+        <div style={numberStyle}>
+          {String(time.seconds).padStart(2, "0")}
+        </div>
+        <div style={labelStyle}>Seconds</div>
+      </div>
     </div>
   );
 };

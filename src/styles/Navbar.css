@@ -1,0 +1,219 @@
+
+/* 🌌 NAVBAR BASE (PREMIUM GLASS) */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+
+  transition: all 0.3s ease;
+}
+
+/* 🧊 CONTAINER */
+.navbar-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 14px 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 🚀 LOGO (IMPROVED) */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 10px;
+
+  filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.5));
+  transition: 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.1) rotate(3deg);
+  filter: drop-shadow(0 0 18px rgba(0, 255, 255, 0.7));
+}
+
+/* 📌 NAV LINKS */
+.nav-links {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+/* ✨ NAV ITEM */
+.nav-item {
+  position: relative;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+
+  padding: 6px 4px;
+  transition: all 0.3s ease;
+}
+
+/* 🌟 HOVER EFFECT */
+.nav-item:hover {
+  color: cyan;
+  transform: translateY(-1px);
+}
+
+/* 🔵 ACTIVE STATE */
+.active {
+  color: cyan;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+/* ✨ UNDERLINE ANIMATION */
+.underline {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, cyan, #3b82f6);
+  transition: 0.3s ease;
+  border-radius: 10px;
+}
+
+.underline.show {
+  width: 100%;
+}
+
+/* 🔐 AUTH BUTTONS */
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* LOGIN */
+.login-btn {
+  border: 1px solid rgba(0, 255, 255, 0.6);
+  padding: 7px 14px;
+  border-radius: 8px;
+
+  color: cyan;
+  text-decoration: none;
+
+  transition: 0.3s ease;
+}
+
+.login-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* REGISTER */
+.register-btn {
+  background: linear-gradient(90deg, cyan, #3b82f6);
+  padding: 7px 16px;
+  border-radius: 8px;
+
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  transition: 0.3s ease;
+}
+
+.register-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+}
+
+/* 🍔 HAMBURGER */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.hamburger div {
+  width: 26px;
+  height: 2px;
+  background: cyan;
+  transition: 0.3s;
+}
+
+/* 📱 MOBILE MENU */
+.mobile-active {
+  color: cyan;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 6px;
+}
+.mobile-menu {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 16px;
+
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+
+  transform: translateY(-20px);
+  opacity: 0;
+  pointer-events: none;
+
+  transition: 0.3s ease;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+}
+
+.mobile-menu a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+
+  padding: 10px;
+  border-radius: 8px;
+
+  transition: 0.3s;
+}
+
+.mobile-menu a:hover {
+  background: rgba(0, 255, 255, 0.1);
+  color: cyan;
+}
+
+/* OPEN STATE */
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-links,
+  .auth-buttons {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

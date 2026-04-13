@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import '../styles/globals.css';
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -14,138 +13,223 @@ const Footer = () => {
         { name: 'Tracks', href: '/tracks' },
         { name: 'Team', href: '/team' }
       ]
-    },
-    {
-      title: 'Resources',
-      links: [
-        { name: 'Problem Statements', href: '/problems' },
-        { name: 'Guidelines', href: '/guidelines' },
-        { name: 'FAQ', href: '/faq' },
-        { name: 'Sponsors', href: '/sponsors' }
-      ]
-    },
-    {
-      title: 'Legal',
-      links: [
-        { name: 'Privacy Policy', href: '/privacy' },
-        { name: 'Terms of Service', href: '/terms' },
-        { name: 'Code of Conduct', href: '/code-of-conduct' }
-      ]
     }
   ];
 
   const socialLinks = [
-    { name: 'Twitter', icon: '𝕏', href: 'https://twitter.com' },
-    { name: 'LinkedIn', icon: 'in', href: 'https://linkedin.com' },
-    { name: 'GitHub', icon: 'gh', href: 'https://github.com' },
-    { name: 'Instagram', icon: '📷', href: 'https://instagram.com' }
+    { name: 'Twitter', icon: '𝕏', href: '#' },
+    { name: 'LinkedIn', icon: 'in', href: '#' },
+    { name: 'GitHub', icon: 'gh', href: '#' },
+    { name: 'Instagram', icon: '📷', href: '#' }
   ];
 
   return (
-    <footer className="relative bg-gradient-to-b from-black/50 to-black border-t border-cyan-500/20">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
-      </div>
+    <footer style={styles.footer}>
+      {/* Subtle Top Border Glow */}
+      <div style={styles.topGlow}></div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-12">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <div style={styles.container}>
+        <div style={styles.mainGrid}>
+          
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="space-y-4"
+            style={styles.brandCol}
           >
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg"></div>
-              <span className="text-white font-bold text-xl">Hackathon 2024</span>
+            <div style={styles.logoWrapper}>
+              <div style={styles.logoBox}></div>
+              <span style={styles.logoText}>HACKATHON <span style={{color: '#22d3ee'}}>2026</span></span>
             </div>
-            <p className="text-gray-400 text-sm">
-              Building the future through innovation, creativity, and collaboration.
+            <p style={styles.brandDesc}>
+              A global stage for builders, creators, and visionaries to shape the next generation of tech.
             </p>
           </motion.div>
 
-          {/* Footer Sections */}
+          {/* Link Sections */}
           {footerSections.map((section, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="space-y-4"
-            >
-              <h3 className="text-white font-semibold">{section.title}</h3>
-              <ul className="space-y-2">
+            <div key={idx} style={styles.linkCol}>
+              <h3 style={styles.sectionTitle}>{section.title}</h3>
+              <ul style={styles.linkList}>
                 {section.links.map((link) => (
-                  <li key={link.href}>
-                    <a
-                      href={link.href}
-                      className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
-                    >
+                  <li key={link.name}>
+                    <a href={link.href} style={styles.linkItem}>
                       {link.name}
                     </a>
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        {/* Social Links & Bottom Section */}
-        <div className="border-t border-cyan-500/20 pt-8 space-y-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            {/* Social Links */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex items-center space-x-4"
-            >
-              <p className="text-gray-400 text-sm">Follow us:</p>
+        {/* Bottom Bar */}
+        <div style={styles.bottomBar}>
+          <div style={styles.bottomContent}>
+            
+            {/* Socials */}
+            <div style={styles.socialGroup}>
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.name}
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.2, rotate: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full border border-cyan-400/30 text-cyan-400 hover:border-cyan-400 hover:bg-cyan-400/10 transition-colors"
+                  whileHover={{ y: -3, color: '#22d3ee' }}
+                  style={styles.socialIcon}
                 >
                   {social.icon}
                 </motion.a>
               ))}
-            </motion.div>
+            </div>
 
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-center md:text-right space-y-2"
-            >
-              <p className="text-gray-400 text-sm">
-                📧 contact@hackathon.org
+            {/* Copyright Info */}
+            <div style={styles.copyRightGroup}>
+              <p style={styles.copyText}>
+                © {currentYear} Hackathon Organization. 
+                <span style={styles.divider}>|</span> 
+                Status: <span style={styles.statusDot}></span> All Systems Operational
               </p>
-              <p className="text-gray-400 text-sm">
-                📍 City Name, Country
-              </p>
-            </motion.div>
-          </div>
+            </div>
 
-          {/* Copyright */}
-          <div className="border-t border-cyan-500/20 pt-6 text-center">
-            <p className="text-gray-500 text-sm">
-              © {currentYear} Hackathon. All rights reserved. | Designed with ❤️ by the Hackathon Team
-            </p>
           </div>
         </div>
       </div>
     </footer>
   );
+};
+
+const styles = {
+  footer: {
+    backgroundColor: '#020617',
+    position: 'relative',
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingTop: '80px',
+    paddingBottom: '40px',
+    color: '#94a3b8',
+    fontFamily: '"Inter", sans-serif',
+    overflow: 'hidden',
+  },
+  topGlow: {
+    position: 'absolute',
+    top: '-1px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '60%',
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, #0891b2, transparent)',
+  },
+  container: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 24px',
+  },
+  mainGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '48px',
+    marginBottom: '64px',
+  },
+  brandCol: {
+    gridColumn: 'span 1',
+    maxWidth: '300px',
+  },
+  logoWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '20px',
+  },
+  logoBox: {
+    width: '32px',
+    height: '32px',
+    background: 'linear-gradient(135deg, #0891b2 0%, #4f46e5 100%)',
+    borderRadius: '8px',
+    boxShadow: '0 0 15px rgba(8, 145, 178, 0.3)',
+  },
+  logoText: {
+    color: '#f8fafc',
+    fontSize: '20px',
+    fontWeight: '800',
+    letterSpacing: '-0.02em',
+  },
+  brandDesc: {
+    fontSize: '14px',
+    lineHeight: '1.6',
+    color: '#64748b',
+  },
+  sectionTitle: {
+    color: '#f8fafc',
+    fontSize: '14px',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '24px',
+  },
+  linkList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  linkItem: {
+    display: 'block',
+    fontSize: '14px',
+    color: '#94a3b8',
+    textDecoration: 'none',
+    marginBottom: '12px',
+    transition: 'all 0.2s ease',
+    ':hover': { color: '#f8fafc' } // Handled via global CSS or hover states
+  },
+  bottomBar: {
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingTop: '32px',
+  },
+  bottomContent: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '24px',
+  },
+  socialGroup: {
+    display: 'flex',
+    gap: '16px',
+  },
+  socialIcon: {
+    fontSize: '18px',
+    color: '#64748b',
+    textDecoration: 'none',
+    width: '40px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.05)',
+    transition: '0.3s',
+  },
+  copyRightGroup: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  copyText: {
+    fontSize: '13px',
+    color: '#475569',
+  },
+  divider: {
+    margin: '0 12px',
+    color: '#1e293b',
+  },
+  statusDot: {
+    display: 'inline-block',
+    width: '8px',
+    height: '8px',
+    backgroundColor: '#10b981',
+    borderRadius: '50%',
+    marginRight: '6px',
+    boxShadow: '0 0 8px #10b981',
+  }
 };
 
 export default Footer;

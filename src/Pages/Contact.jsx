@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { NeonText, GlowingButton } from '../components/Effects/NeonEffects';
 
 const Contact = () => {
   const [formData, setFormData] = useState({

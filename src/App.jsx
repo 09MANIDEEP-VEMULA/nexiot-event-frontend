@@ -1,6 +1,14 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom';
+
 import { AnimatePresence } from 'framer-motion';
+
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -23,88 +31,93 @@ import AdminPanel from './Pages/AdminPanel';
 import NotFound from './Pages/NotFound';
 import ServerError from './Pages/ServerError';
 
-
-// =======================
-// Protected Route
-// =======================
+/* -----------------------------
+   PROTECTED ROUTE
+------------------------------*/
 const ProtectedRoute = ({ children, isAdmin = false }) => {
   const token = localStorage.getItem('authToken');
-  const userRole = localStorage.getItem('userRole');
+  const role = localStorage.getItem('userRole');
 
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (isAdmin && userRole !== 'ADMIN') {
+  if (isAdmin && role !== 'ADMIN') {
     return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 };
 
+/* -----------------------------
+   ROUTES WRAPPER (for animation fix)
+------------------------------*/
+function AnimatedRoutes() {
+  const location = useLocation();
 
-// =======================
-// App
-// =======================
-function App() {
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+
+        {/* PUBLIC ROUTES */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/tracks" element={<Tracks />} />
+        <Route path="/problems" element={<ProblemStatements />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/payment" element={<Payment />} />
+
+        {/* ERROR ROUTES */}
+        <Route path="/404" element={<NotFound />} />
+        <Route path="/500" element={<ServerError />} />
+
+        {/* PROTECTED USER ROUTE */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN ONLY ROUTE */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/404" replace />} />
+
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+/* -----------------------------
+   APP ROOT
+------------------------------*/
+export default function App() {
   return (
     <AuthProvider>
       <AppProvider>
         <Router>
-          <div className="bg-black text-white overflow-hidden">
-
+            {/* NAVBAR (always visible) */}
             <Navbar />
-
-            <AnimatePresence mode="wait">
-              <Routes>
-
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/tracks" element={<Tracks />} />
-                <Route path="/problems" element={<ProblemStatements />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/payment" element={<Payment />} />
-
-                {/* Error Pages */}
-                <Route path="/404" element={<NotFound />} />
-                <Route path="/500" element={<ServerError />} />
-
-                {/* Protected Routes */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute isAdmin={true}>
-                      <AdminPanel />
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Catch All (ONLY ONE) */}
-                <Route path="*" element={<Navigate to="/404" replace />} />
-
-              </Routes>
-            </AnimatePresence>
-
+            <main className="flex-1">
+              <AnimatedRoutes />
+            </main>
             <Footer />
-
-          </div>
         </Router>
       </AppProvider>
     </AuthProvider>
   );
 }
-
-export default App;

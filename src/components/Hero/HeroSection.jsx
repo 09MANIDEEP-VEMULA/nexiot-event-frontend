@@ -1,178 +1,240 @@
-import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
-import { motion } from 'framer-motion';
-import * as THREE from 'three';
+import React, { useEffect, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Stars, Float } from "@react-three/drei";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Highly recommended for pro feel
+import * as THREE from "three";
 
-// 3D Rotating Sphere
-function RotatingSphere() {
-  const mesh = useRef();
+/* 🌍 ROTATING HERO GLOBE - Enhanced with wireframe layer */
+const HeroGlobe = () => {
+  const globeRef = useRef();
+  const wireRef = useRef();
 
   useFrame((state) => {
-    if (mesh.current) {
-      mesh.current.rotation.x += 0.001;
-      mesh.current.rotation.y += 0.002;
+    const t = state.clock.getElapsedTime();
+    if (globeRef.current) {
+      globeRef.current.rotation.y = t * 0.1;
+      wireRef.current.rotation.y = t * 0.15;
     }
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={1} floatIntensity={2}>
-      <mesh ref={mesh}>
-        <icosahedronGeometry args={[1, 5]} />
-        <MeshDistortMaterial
-          color="#64b5f6"
-          emissive="#1e3a8a"
-          distort={0.3}
-          speed={2}
-          roughness={0.5}
-          metalness={0.8}
-        />
-      </mesh>
-    </Float>
-  );
-}
-
-// 3D Background elements
-function Background() {
-  return (
     <>
-      <color attach="background" args={['#000000']} />
-      <fog attach="fog" args={['#000000', 0, 500]} />
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} color="#00d2ff" />
+      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#9d50bb" />
+
+      <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
+        <mesh ref={globeRef} position={[0, 0, -2]}>
+          <sphereGeometry args={[3, 64, 64]} />
+          <meshStandardMaterial
+            color="#020617"
+            emissive="#0f172a"
+            roughness={0.8}
+            metalness={0.2}
+          />
+        </mesh>
+        {/* Professional touch: Subtle wireframe overlay */}
+        <mesh ref={wireRef} position={[0, 0, -2]}>
+          <sphereGeometry args={[3.05, 32, 32]} />
+          <meshBasicMaterial color="#38bdf8" wireframe transparent opacity={0.1} />
+        </mesh>
+      </Float>
     </>
   );
-}
+};
 
-export function Hero3D() {
-  const [isLoading, setIsLoading] = useState(true);
+const HeroSection = () => {
+  const heroRef = useRef();
+  const navigate = useNavigate();
+  const mouse = useRef({ x: 0, y: 0 });
+  const smooth = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      mouse.current.x = (e.clientX / window.innerWidth - 0.5) * 15;
+      mouse.current.y = (e.clientY / window.innerHeight - 0.5) * 15;
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    let frame;
+    const animate = () => {
+      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.05;
+      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.05;
+      if (heroRef.current) {
+        heroRef.current.style.transform = `translate3d(${smooth.current.x}px, ${smooth.current.y}px, 0)`;
+      }
+      frame = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
-    <Canvas camera={{ position: [0, 0, 2.5], fov: 75 }} style={{ height: '500px' }}>
-      <Background />
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, 10]} intensity={0.5} color="#64b5f6" />
-      
-      <RotatingSphere />
-      <OrbitControls 
-        enableZoom={false}
-        enablePan={false}
-        rotateSpeed={0.5}
-      />
-    </Canvas>
-  );
-}
-
-// Full Hero Section
-export function HeroSection() {
-  return (
-    <div className="relative w-full min-h-screen bg-black overflow-hidden">
-      {/* 3D Canvas Background */}
-      <div className="absolute inset-0">
-        <Hero3D />
+    <section style={styles.container}>
+      {/* 🌌 3D Canvas Layer */}
+      <div style={styles.canvasWrapper}>
+        <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+          <HeroGlobe />
+          <Stars radius={100} depth={50} count={6000} factor={4} saturation={0} fade speed={1} />
+        </Canvas>
       </div>
 
-      {/* Animated Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60"></div>
-
-      {/* Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="text-center max-w-4xl"
-        >
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
-          >
-            Hackathon 2024
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8"
-          >
-            Building Tomorrow's Solutions Today
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-gray-400 mb-12 max-w-2xl mx-auto"
-          >
-            Join 100+ developers, designers, and innovators for 48 hours of non-stop creation. 
-            Compete, collaborate, and showcase your skills on the biggest platform.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center mb-8"
-          >
-            <motion.a
-              href="/register"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(100, 181, 246, 0.5)' }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold rounded-lg text-lg transition-all"
-            >
-              Register Now
-            </motion.a>
-            <motion.a
-              href="#about"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-bold rounded-lg text-lg hover:bg-cyan-400/10 transition"
-            >
-              Learn More
-            </motion.a>
-          </motion.div>
-
-          {/* Floating Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.2 }}
-            className="grid grid-cols-3 gap-8 pt-8 border-t border-cyan-500/20"
-          >
-            {[
-              { label: '100+', value: 'Teams' },
-              { label: '₹10L+', value: 'Prizes' },
-              { label: '48hrs', value: 'Duration' }
-            ].map((stat, idx) => (
-              <div key={idx} className="space-y-2">
-                <div className="text-2xl md:text-3xl font-bold text-cyan-400">
-                  {stat.label}
-                </div>
-                <div className="text-gray-400">{stat.value}</div>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
-      >
-        <div className="text-center">
-          <p className="text-gray-400 text-sm mb-2">Scroll to explore</p>
-          <svg className="w-6 h-6 text-cyan-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+      {/* ✨ Content Layer */}
+      <div ref={heroRef} style={styles.content}>
+        <div style={styles.badge}>
+          <span style={styles.badgePulse}></span>
+          HACKATHON 2026 • NOW OPEN
         </div>
-      </motion.div>
-    </div>
+
+        <h1 style={styles.title}>
+          Build the <span style={styles.gradientText}>Future</span>
+        </h1>
+
+        <p style={styles.description}>
+          Experience the next generation of innovation. 
+          Collaborate with the world's brightest minds to build solutions that scale.
+        </p>
+
+        <div style={styles.buttonGroup}>
+          <button 
+            style={styles.primaryBtn} 
+            onClick={() => navigate("Register")}
+            onMouseEnter={(e) => e.target.style.filter = "brightness(1.2)"}
+            onMouseLeave={(e) => e.target.style.filter = "brightness(1)"}
+          >
+            Register Now
+          </button>
+          <button style={styles.secondaryBtn}>
+            View Tracks
+          </button>
+        </div>
+
+        {/* Improved Glass Card */}
+        <div style={styles.glassCard}>
+          <div style={styles.cardItem}><strong>AI</strong> Model Training</div>
+          <div style={styles.divider}></div>
+          <div style={styles.cardItem}><strong>Web3</strong> Architecture</div>
+          <div style={styles.divider}></div>
+          <div style={styles.cardItem}><strong>Cloud</strong> Native</div>
+        </div>
+      </div>
+    </section>
   );
-}
+};
+
+/* 🎨 Professional UI Style Objects */
+const styles = {
+  container: {
+    height: "100vh",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#020617",
+    overflow: "hidden",
+    position: "relative",
+    color: "#fff",
+    fontFamily: "'Inter', sans-serif",
+  },
+  canvasWrapper: {
+    position: "absolute",
+    inset: 0,
+    zIndex: 1,
+    background: "radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%)",
+  },
+  content: {
+    position: "relative",
+    zIndex: 10,
+    textAlign: "center",
+    maxWidth: "850px",
+    padding: "0 20px",
+    pointerEvents: "none", // Allow clicks to pass to buttons below
+  },
+  badge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "rgba(255, 255, 255, 0.05)",
+    padding: "8px 16px",
+    borderRadius: "100px",
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "2px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    marginBottom: "24px",
+    color: "#38bdf8",
+  },
+  title: {
+    fontSize: "clamp(3rem, 8vw, 5rem)",
+    fontWeight: "900",
+    lineHeight: "1.1",
+    letterSpacing: "-0.03em",
+    marginBottom: "20px",
+  },
+  gradientText: {
+    background: "linear-gradient(to right, #38bdf8, #818cf8, #c084fc)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+  description: {
+    fontSize: "1.1rem",
+    color: "#94a3b8",
+    lineHeight: "1.6",
+    maxWidth: "600px",
+    margin: "0 auto 40px auto",
+  },
+  buttonGroup: {
+    display: "flex",
+    gap: "16px",
+    justifyContent: "center",
+    pointerEvents: "all",
+  },
+  primaryBtn: {
+    padding: "14px 32px",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    color: "#020617",
+    fontWeight: "700",
+    border: "none",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    boxShadow: "0 0 20px rgba(255,255,255,0.1)",
+  },
+  secondaryBtn: {
+    padding: "14px 32px",
+    borderRadius: "8px",
+    backgroundColor: "transparent",
+    color: "#fff",
+    fontWeight: "600",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+  },
+  glassCard: {
+    marginTop: "60px",
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    padding: "20px",
+    borderRadius: "16px",
+    background: "linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))",
+    backdropFilter: "blur(20px)",
+    border: "1px solid rgba(255,255,255,0.05)",
+    boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+  },
+  cardItem: {
+    fontSize: "14px",
+    color: "#94a3b8",
+  },
+  divider: {
+    width: "1px",
+    height: "24px",
+    background: "rgba(255,255,255,0.1)",
+  }
+};
 
 export default HeroSection;

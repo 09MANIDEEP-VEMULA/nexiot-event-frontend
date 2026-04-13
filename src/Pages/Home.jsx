@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
+import './Home.css';
 import { motion } from 'framer-motion';
 import HeroSection from '../components/Hero/HeroSection.jsx';
 import CountdownTimer from '../components/Common/CountdownTimer.jsx';
-import ProblemCard from '../components/Cards/ProblemCard';
-import AnimatedButton from '../components/Common/AnimatedButton.jsx';
-
-import styles from '../styles/globals.css';
 const Home = () => {
   const tracks = [
     {
@@ -82,8 +79,20 @@ const Home = () => {
               Mark your calendar and get ready for the biggest tech event of the year!
             </p>
           </motion.div>
-          <CountdownTimer targetDate="2024-12-31T00:00:00" />
-        </div>
+          {/* Countdown Section */}
+<section className="py-16 bg-gradient-to-b from-black via-blue-950/10 to-black">
+  <div className="max-w-7xl mx-auto px-6">
+
+    {/* 🔥 WRAP TIMER IN CENTER + HORIZONTAL LOOK */}
+    <div className="flex justify-center items-center">
+      <div className="flex gap-6 md:gap-10 bg-white/5 border border-cyan-500/20 rounded-2xl px-6 py-6 backdrop-blur-md shadow-lg">
+        <CountdownTimer targetDate="2024-12-31T00:00:00" />
+      </div>
+    </div>
+
+  </div>
+</section>
+                  </div>
       </section>
 
       {/* Tracks Section */}
@@ -101,8 +110,10 @@ const Home = () => {
               Explore <span className="gradient-neon">Tracks</span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Choose from diverse tracks and challenge yourself across different domains of technology
+              Choose from diverse tracks and challenge yourself across different domains of technology 
             </p>
+            <br>
+            </br>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -128,31 +139,126 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border-y border-cyan-500/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { value: '100+', label: 'Expected Teams' },
-              { value: '48hrs', label: 'Coding Sprint' },
-              { value: '₹10L+', label: 'Prize Pool' },
-              { value: '5', label: 'Tracks' }
-            ].map((stat, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <div className="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-gray-400">{stat.label}</div>
-              </motion.div>
-            ))}
+
+      <section
+  style={{
+    position: "relative",
+    padding: "120px 0",
+    overflow: "hidden",
+    background: "#030712"
+  }}
+>
+  {/* Background Glow */}
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      background:
+        "radial-gradient(circle at center, rgba(59,130,246,0.15), transparent 60%)"
+    }}
+  />
+
+  <div
+    style={{
+      maxWidth: "1200px",
+      margin: "0 auto",
+      padding: "0 24px",
+      position: "relative",
+      zIndex: 10
+    }}
+  >
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: "40px"
+      }}
+    >
+      {[
+        { value: "100+", label: "Expected Teams" },
+        { value: "48hrs", label: "Coding Sprint" },
+        { value: "₹10L+", label: "Prize Pool" },
+        { value: "5", label: "Tracks" }
+      ].map((stat, idx) => (
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: idx * 0.15 }}
+          whileHover={{ y: -8 }}
+          style={{
+            position: "relative",
+            padding: "40px 20px",
+            textAlign: "center",
+            borderRadius: "16px",
+            background:
+              "linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            transition: "all 0.3s ease",
+            cursor: "pointer"
+          }}
+        >
+          {/* Glow Effect */}
+          <div
+            style={{
+              position: "absolute",
+              inset: "-1px",
+              borderRadius: "16px",
+              background:
+                "linear-gradient(120deg, transparent, rgba(0,255,255,0.3), transparent)",
+              opacity: 0,
+              transition: "0.4s"
+            }}
+            className="card-glow"
+          />
+
+          {/* Number */}
+          <div
+            style={{
+              fontSize: "48px",
+              fontWeight: "900",
+              background:
+                "linear-gradient(180deg, #ffffff 0%, #9ca3af 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: "-1px"
+            }}
+          >
+            {stat.value}
           </div>
-        </div>
-      </section>
+
+          {/* Label */}
+          <div
+            style={{
+              marginTop: "12px",
+              fontSize: "13px",
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: "2px",
+              color: "rgba(34,211,238,0.8)"
+            }}
+          >
+            {stat.label}
+          </div>
+
+          {/* Bottom Accent */}
+          <div
+            style={{
+              margin: "20px auto 0",
+              width: "30px",
+              height: "2px",
+              background: "#1f2937",
+              transition: "0.3s"
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* Features Section */}
       <section className="py-20">
@@ -221,95 +327,198 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gradient-to-b from-transparent via-blue-950/10 to-transparent">
-        <div className="max-w-3xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Frequently Asked <span className="gradient-neon">Questions</span>
-            </h2>
-          </motion.div>
+      <section
+  className="py-24"
+  style={{
+    background:
+      "linear-gradient(to bottom, transparent, rgba(2,6,23,0.8), transparent)",
+    position: "relative"
+  }}
+>
+  {/* Background Glow */}
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      background:
+        "radial-gradient(circle at center, rgba(0,140,255,0.08), transparent 70%)"
+    }}
+  />
 
-          <div className="space-y-4">
-            {faqs.map((faq, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
+  <div
+    style={{
+      maxWidth: "900px",
+      margin: "0 auto",
+      padding: "0 24px",
+      position: "relative",
+      zIndex: 2
+    }}
+  >
+    {/* Heading */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      style={{
+        textAlign: "center",
+        marginBottom: "60px"
+      }}
+    >
+      <h2
+        style={{
+          fontSize: "42px",
+          fontWeight: "700",
+          color: "white",
+          marginBottom: "10px"
+        }}
+      >
+        Frequently Asked{" "}
+        <span
+          style={{
+            background:
+              "linear-gradient(90deg,#22d3ee,#3b82f6,#8b5cf6)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          }}
+        >
+          Questions
+        </span>
+      </h2>
+
+      <div
+        style={{
+          width: "80px",
+          height: "3px",
+          margin: "15px auto",
+          background:
+            "linear-gradient(90deg, transparent, #22d3ee, transparent)"
+        }}
+      />
+    </motion.div>
+
+    {/* FAQ Container */}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px"
+      }}
+    >
+      {faqs.map((faq, idx) => (
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: idx * 0.05 }}
+        >
+          {/* Question */}
+          <motion.button
+            onClick={() =>
+              setExpandedFaq(expandedFaq === idx ? -1 : idx)
+            }
+            whileHover={{
+              y: -3
+            }}
+            style={{
+              width: "100%",
+              textAlign: "left",
+              padding: "20px 22px",
+              borderRadius: "14px",
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+              backdropFilter: "blur(20px)",
+              border:
+                expandedFaq === idx
+                  ? "1px solid rgba(34,211,238,0.4)"
+                  : "1px solid rgba(255,255,255,0.05)",
+              position: "relative",
+              transition: "all 0.3s ease"
+            }}
+          >
+            {/* Left Accent */}
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: "3px",
+                borderRadius: "4px",
+                background:
+                  expandedFaq === idx
+                    ? "linear-gradient(#22d3ee,#3b82f6)"
+                    : "transparent",
+                transition: "0.3s"
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#fff"
+                }}
               >
-                <motion.button
-                  onClick={() => setExpandedFaq(expandedFaq === idx ? -1 : idx)}
-                  className="w-full text-left card group"
-                  whileHover={{ borderColor: 'rgba(100, 181, 246, 0.8)' }}
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">
-                      {faq.q}
-                    </h3>
-                    <motion.div
-                      animate={{ rotate: expandedFaq === idx ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="text-cyan-400"
-                    >
-                      ▼
-                    </motion.div>
-                  </div>
-                </motion.button>
+                {faq.q}
+              </h3>
 
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{
-                    opacity: expandedFaq === idx ? 1 : 0,
-                    height: expandedFaq === idx ? 'auto' : 0
-                  }}
-                  transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
-                >
-                  <p className="p-4 text-gray-300 bg-white/5 border border-cyan-500/10 border-t-0 rounded-b-lg">
-                    {faq.a}
-                  </p>
-                </motion.div>
+              <motion.div
+                animate={{
+                  rotate: expandedFaq === idx ? 180 : 0
+                }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  color: "#22d3ee",
+                  fontSize: "18px"
+                }}
+              >
+                ▼
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
+          </motion.button>
 
-      {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500 rounded-full blur-3xl opacity-10"></div>
-        
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
+          {/* Answer */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{
+              opacity: expandedFaq === idx ? 1 : 0,
+              height: expandedFaq === idx ? "auto" : 0
+            }}
+            transition={{ duration: 0.35 }}
+            style={{
+              overflow: "hidden"
+            }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to <span className="gradient-neon">Build Something Amazing?</span>
-            </h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-              Don't miss this opportunity to showcase your skills and compete with the brightest minds
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <AnimatedButton size="lg">
-                Register Now
-              </AnimatedButton>
-              <AnimatedButton variant="secondary" size="lg">
-                Learn More
-              </AnimatedButton>
+            <div
+              style={{
+                padding: "20px 22px",
+                marginTop: "2px",
+                borderRadius: "0 0 14px 14px",
+                background:
+                  "rgba(255,255,255,0.03)",
+                border:
+                  "1px solid rgba(34,211,238,0.1)",
+                borderTop: "none",
+                color: "#9ca3af",
+                lineHeight: "1.7"
+              }}
+            >
+              {faq.a}
             </div>
           </motion.div>
-        </div>
-      </section>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
     </div>
   );
 };
